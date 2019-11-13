@@ -27,11 +27,12 @@ jobs:
     - name: Prepare for deployment
       run: |
         mv indexProduction.html index.html
-        rm .gitignore
+        mkdir public
+        cp index.html bundleOutput public
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v2.5.0
       env:
         ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         PUBLISH_BRANCH: gh-pages
-        PUBLISH_DIR: .
+        PUBLISH_DIR: ./public
