@@ -21,52 +21,70 @@ let string_of_bool_list = {
   string_of_bool_list_tail("")
 };
 
-[@react.component]
-let make = (~m, ~n, ~configuration) => {
-  let conf_string = string_of_bool_list(configuration);
-  <div> 
-    {React.string("Maze" ++ string_of_int(m) ++ "x" ++ string_of_int(n) ++ ": " ++ conf_string)} 
-    <br/> 
-    <canvas id={"Maze_" ++ conf_string} className="MazeCanvas" width="200" height="100"></canvas>
-  </div>;
-};
-
 let draw = (m, n, id, configuration) => {
   
-  let myCanvas: canvas = document##getElementById(id);
+  let myCanvas = document##getElementById(id);
   let ctx = getContext(myCanvas, "2d");
 
   let mf = float_of_int(m);
   let nf = float_of_int(n);
 
-  let wall_thickness = 1.0;
-  let wall_length_h = (100.0 -. (mf +. 1.) *. wall_thickness) /. mf;
-  let wall_length_v = (100.0 -. (nf +. 1.) *. wall_thickness) /. nf;
+  let w: float = myCanvas##width;
+  let h: float = myCanvas##height;
+
+  let wall_thickness = 0.05*.max(w /. mf, h /.nf);
+  let wall_length_h = (w -. ((mf +. 1.) *. wall_thickness)) /. mf;
+  let wall_length_v = (h -. ((nf +. 1.) *. wall_thickness)) /. nf;
 
   let draw_wall = (x, y, dir) => {
     let (xf, yf) = (float_of_int(x), float_of_int(y))
     let xmin = xf *. wall_length_h +. (xf +. 1.) *. wall_thickness;
     let ymin = yf *. wall_length_v +. (yf +. 1.) *. wall_thickness;
-    let xmax = xmin +. wall_length_h;
-    let ymax = ymin +. wall_length_v;
 
     switch (dir) {
-      | Horizontal  => fillRect(ctx, xmin, ymin, xmax, ymin)
-      | Vertical    => fillRect(ctx, xmin, ymin, xmin, ymax)
+      | Horizontal  => fillRect(ctx, xmin, ymin-.wall_thickness, wall_length_h, wall_thickness)
+      | Vertical    => fillRect(ctx, xmin-.wall_thickness, ymin, wall_thickness, wall_length_v)
     };
   }
 
   for(idx in 0 to Array.length(configuration)-1) {
     if (configuration[idx]) {
       let (dir, x, y) = switch (idx) {
-        | a when a < (m-2) * (n-2) => (Vertical, idx mod (m-2), idx / (m-2))
+        | i when i < ((m-1) * (n)) => (Vertical, 1 + (idx / (m-1)), (idx mod (m-1)))
         | _ => {
-          let idx_h = idx - (m-2) * (n-2); 
-          (Horizontal, idx_h/(n-2), idx mod (n-2))
+          let idx_h = idx - ((m-1) * n); 
+          (Horizontal, idx_h / (n-1), 1 + (idx_h mod (n-1)))
           }
       };
       draw_wall(x, y, dir);
     }    
   };
   
+};
+
+
+let component = ReasonReact.statelessComponent("Maze");
+
+let make = (~m, ~n, ~configuration) => {
+  ...component,
+  didMount: (self) => {
+      let conf_string = string_of_bool_list(configuration);
+      draw(m, n, "Maze_" ++ conf_string, Array.of_list(configuration));
+    },
+  render: (_self) =>{
+    let conf_string = string_of_bool_list(configuration);
+    let ratio = Js.Float.toString(float_of_int(n)/.float_of_int(m));
+    let style = ReactDOMRe.Style.make(~borderWidth="3px", ~borderStyle="solid", ());
+    let sw = ReactDOMRe.Style.unsafeAddProp(style, "width", "50%");
+    let swh = ReactDOMRe.Style.unsafeAddProp(sw, "height", "calc(width * "++ratio++")");
+    <div> 
+      {React.string("Maze" ++ string_of_int(m) ++ "x" ++ string_of_int(n) ++ ": " ++ conf_string)} 
+      <br/> 
+      <canvas 
+        id={"Maze_" ++ conf_string} 
+        className="MazeCanvas" 
+        style=swh>
+      </canvas>
+    </div>
+  }
 };
