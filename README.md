@@ -19,10 +19,22 @@ The approach we use is the following one :
 1. we generate ...
 2. we filter ...
 
-## Run
+## Install
+
+```sh
+npm install --global bs-platform@6.2.1
+```
+
+## Build
 
 ```sh
 npm install
+bsb -make-world -clean-world
+```
+
+## Run
+
+```sh
 npm run server
 # in a new tab
 npm start
