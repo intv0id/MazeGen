@@ -28,6 +28,6 @@ let makeContainer = text => {
 };
 
 ReactDOMRe.render(
-  <AllMazes n=2 m=3 />,
+  ReasonReact.element(Selector.make()),
   makeContainer("Reason Mazes"),
 );

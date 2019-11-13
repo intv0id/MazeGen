@@ -6,7 +6,7 @@ type ordinals =
 
 let rec combinations_tail = (f, k, m, prefix) =>
   switch (k, m) {
-  | (a, b) when a < 0 || b < 0 => failwith("ki or mi negative")
+  | (a, b) when a < 0 || b < 0 => failwith("k or m negative")
   | (a, b) when a > b => failwith("k > m")
   | (0, 0) => f(Array.of_list(prefix)) ? [prefix] : []
   | (0, b) => combinations_tail(f, 0, b - 1, [false, ...prefix])
