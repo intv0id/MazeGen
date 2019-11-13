@@ -28,7 +28,7 @@ jobs:
       run: |
         mv indexProduction.html index.html
         mkdir public
-        cp index.html bundleOutput public
+        cp -r index.html bundleOutput public
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v2.5.0
