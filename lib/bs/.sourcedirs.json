@@ -1,0 +1,1 @@
+{ "dirs" : [ "src" , "src/Maze" , "src/AllMazes" , "src/Generator" ] , "pkgs" : [ [ "bs-platform" , "/home/runner/work/MazeGen/MazeGen/node_modules/bs-platform" ] , [ "reason-react" , "/home/runner/work/MazeGen/MazeGen/node_modules/reason-react" ] ] , "generated" : [] }
