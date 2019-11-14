@@ -8,9 +8,7 @@ type d = {
 
 [@react.component]
 let make = (~m, ~n, ~configuration) => {
-  let (dims, setDims) = React.useState(() => {m: 2, n: 2});
-  let (conf, setConf) = React.useState(() => configuration);
-  let conf_string = conf->string_of_bool_list;
+  let conf_string = configuration->string_of_bool_list;
 
   let style =
     ReactDOMRe.Style.make(~borderWidth="3px", ~borderStyle="solid", ());
@@ -26,7 +24,7 @@ let make = (~m, ~n, ~configuration) => {
     draw(
       m,
       n,
-      "Maze_" ++ conf->string_of_bool_list,
+      "Maze_" ++ configuration->string_of_bool_list,
       Array.of_list(configuration),
     )
     |> ignore;
