@@ -53,12 +53,14 @@ let draw = (m, n, id, configuration) => {
         switch (idx) {
         | i when i < (m - 1) * n => (
             Vertical,
-            1 + idx / (m - 1),
-            idx mod (m - 1),
+            1 + idx mod (m - 1),
+            idx / (m - 1),
           )
         | _ =>
           let idx_h = idx - (m - 1) * n;
-          (Horizontal, idx_h / (n - 1), 1 + idx_h mod (n - 1));
+          Js.log(idx_h->string_of_int);
+          Js.log((idx_h / (n - 1))->string_of_int);
+          (Horizontal, idx_h mod m, 1+idx_h / m);
         };
       draw_wall(x, y, dir);
     };
