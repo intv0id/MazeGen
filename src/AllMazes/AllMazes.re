@@ -2,13 +2,10 @@ open Generator;
 
 [@react.component]
 let make = (~m, ~n) => {
-  let maze_configurations = generate_tail(m, n);
-  let conf_elements =
-    Array.map(
-      a => ReasonReact.element(Maze.make(m, n, a)),
-      Array.of_list(maze_configurations),
-    );
+  let conf_elements = List.map(
+    a => <Maze m=m n=n configuration=a />, 
+    generate_tail(m, n));
   <div style={ReactDOMRe.Style.make(~textAlign="center", ())}>
-    {ReactDOMRe.createElement(ReasonReact.fragment, conf_elements)}
+    conf_elements->Array.of_list->React.array
   </div>;
 };
