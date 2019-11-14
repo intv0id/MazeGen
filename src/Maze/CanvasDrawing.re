@@ -1,4 +1,4 @@
-open Utils
+open Utils;
 
 type context;
 type canvas;
@@ -6,7 +6,6 @@ type canvas;
 [@bs.val] external document: Js.t({..}) = "document";
 [@bs.send] external getContext: (canvas, string) => context = "getContext";
 [@bs.send]
-
 external fillRect: (context, float, float, float, float) => unit = "fillRect";
 
 let draw = (m, n, id, configuration) => {

@@ -1,11 +1,10 @@
-open Utils
-open CanvasDrawing
+open Utils;
+open CanvasDrawing;
 
 type d = {
   m: int,
   n: int,
 };
-
 
 [@react.component]
 let make = (~m, ~n, ~configuration) => {
