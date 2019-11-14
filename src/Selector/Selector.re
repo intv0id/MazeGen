@@ -7,15 +7,15 @@ let make = () => {
     <div>
         <div id="Selector">
             <div>
-            <label>{React.string("m : ")}</label>
+            <label>"m : "->React.string</label>
             <input type_="button" onClick={_event => setDims(dims => {...dims, m: dims.m - 1})} value="-"/>
-            <label>{React.string(string_of_int(dims.m))}</label>
+            <label>dims.n->string_of_int->React.string</label>
             <input type_="button" onClick={_event => setDims(dims => {...dims, m: dims.m + 1})} value="+"/>
             </div>
             <div>
-            <label>{React.string("n : ")}</label>
+            <label>"n : "->React.string</label>
             <input type_="button" onClick={_event => setDims(dims => {...dims, n: dims.n - 1})} value="-"/>
-            <label>{React.string(string_of_int(dims.n))}</label>
+            <label>dims.n->string_of_int->React.string</label>
             <input type_="button" onClick={_event => setDims(dims => {...dims, n: dims.n + 1})} value="+"/>
             </div>
         </div>
