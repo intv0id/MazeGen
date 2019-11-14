@@ -86,17 +86,22 @@ let make = (~m, ~n, ~configuration) => {
     let conf_string = string_of_bool_list(configuration);
     draw(m, n, "Maze_" ++ conf_string, Array.of_list(configuration));
   },
+  willUnmount: _self => {
+    let conf_string = string_of_bool_list(configuration);
+    let myCanvas = document##getElementById("Maze_" ++ conf_string);
+    myCanvas##remove();
+    Js.log("heeeeeeeeeey");
+  },
   render: _self => {
     let conf_string = string_of_bool_list(configuration);
-    let ratio = Js.Float.toString(float_of_int(n) /. float_of_int(m));
     let style =
       ReactDOMRe.Style.make(~borderWidth="3px", ~borderStyle="solid", ());
-    let sw = ReactDOMRe.Style.unsafeAddProp(style, "width", "50%");
+    let sw = ReactDOMRe.Style.unsafeAddProp(style, "width", "550px");
     let swh =
       ReactDOMRe.Style.unsafeAddProp(
         sw,
         "height",
-        "calc(width * " ++ ratio ++ ")",
+        string_of_int(550 * n / m) ++ "px",
       );
     <div>
       {React.string(

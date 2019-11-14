@@ -28,6 +28,6 @@ let makeContainer = text => {
 };
 
 ReactDOMRe.render(
-  ReasonReact.element(Selector.make()),
+  <Selector/>,
   makeContainer("Reason Mazes"),
 );

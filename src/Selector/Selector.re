@@ -1,46 +1,25 @@
-type state = {
-  m: int,
-  n: int,
-};
+type d = {m: int, n: int};
 
-type action =
-  | DecrM
-  | IncrM
-  | DecrN
-  | IncrN;
-
-let component = ReasonReact.reducerComponent("Selector");
-
+[@react.component]
 let make = () => {
-  ...component,
+  let (dims, setDims) = React.useState(() => {m: 2, n: 2});
 
-  initialState: () => {m: 2, n: 2},
-
-  reducer: (action, state) =>
-    switch (action) {
-    | IncrM => ReasonReact.Update({...state, m: state.m + 1 })
-    | IncrN => ReasonReact.Update({...state, n: state.n + 1 })
-    | DecrM => ReasonReact.Update({...state, m: max(state.m - 1, 2) })
-    | DecrN => ReasonReact.Update({...state, n: max(state.n - 1, 2) })
-    },
-
-  render: self => {
     <div>
-    <div id="Selector">
-        <div>
-        <label>{React.string("m : ")}</label>
-        <input type_="button" onClick={_event => self.send(DecrM)} value="-"/>
-        <label>{React.string(string_of_int(self.state.m))}</label>
-        <input type_="button" onClick={_event => self.send(IncrM)} value="+"/>
+        <div id="Selector">
+            <div>
+            <label>{React.string("m : ")}</label>
+            <input type_="button" onClick={_event => setDims(dims => {...dims, m: dims.m - 1})} value="-"/>
+            <label>{React.string(string_of_int(dims.m))}</label>
+            <input type_="button" onClick={_event => setDims(dims => {...dims, m: dims.m + 1})} value="+"/>
+            </div>
+            <div>
+            <label>{React.string("n : ")}</label>
+            <input type_="button" onClick={_event => setDims(dims => {...dims, n: dims.n - 1})} value="-"/>
+            <label>{React.string(string_of_int(dims.n))}</label>
+            <input type_="button" onClick={_event => setDims(dims => {...dims, n: dims.n + 1})} value="+"/>
+            </div>
         </div>
-        <div>
-        <label>{React.string("n : ")}</label>
-        <input type_="button" onClick={_event => self.send(DecrN)} value="-"/>
-        <label>{React.string(string_of_int(self.state.n))}</label>
-        <input type_="button" onClick={_event => self.send(IncrN)} value="+"/>
-        </div>
+        <AllMazes m={dims.m} n={dims.n} />
     </div>
-    <AllMazes m={self.state.m} n={self.state.n} />
-    </div>
-  },
+
 };
