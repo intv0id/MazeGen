@@ -9,7 +9,7 @@ let make = () => {
             <div>
             <label>"m : "->React.string</label>
             <input type_="button" onClick={_event => setDims(dims => {...dims, m: dims.m - 1})} value="-"/>
-            <label>dims.n->string_of_int->React.string</label>
+            <label>dims.m->string_of_int->React.string</label>
             <input type_="button" onClick={_event => setDims(dims => {...dims, m: dims.m + 1})} value="+"/>
             </div>
             <div>

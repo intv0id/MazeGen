@@ -4,6 +4,11 @@ type direction =
 type context;
 type canvas;
 
+type d = {
+  m: int,
+  n: int,
+};
+
 [@bs.val] external document: Js.t({..}) = "document";
 [@bs.send] external getContext: (canvas, string) => context = "getContext";
 [@bs.send]
@@ -78,42 +83,42 @@ let draw = (m, n, id, configuration) => {
   };
 };
 
-let component = ReasonReact.statelessComponent("Maze");
-
+[@react.component]
 let make = (~m, ~n, ~configuration) => {
-  ...component,
-  didMount: self => {
-    let conf_string = string_of_bool_list(configuration);
-    draw(m, n, "Maze_" ++ conf_string, Array.of_list(configuration));
-  },
-  willUnmount: _self => {
-    let conf_string = string_of_bool_list(configuration);
-    let myCanvas = document##getElementById("Maze_" ++ conf_string);
-    myCanvas##remove();
-    Js.log("heeeeeeeeeey");
-  },
-  render: _self => {
-    let conf_string = string_of_bool_list(configuration);
-    let style =
-      ReactDOMRe.Style.make(~borderWidth="3px", ~borderStyle="solid", ());
-    let sw = ReactDOMRe.Style.unsafeAddProp(style, "width", "550px");
-    let swh =
-      ReactDOMRe.Style.unsafeAddProp(
-        sw,
-        "height",
-        string_of_int(550 * n / m) ++ "px",
-      );
-    <div>
-      {React.string(
-         "Maze"
-         ++ string_of_int(m)
-         ++ "x"
-         ++ string_of_int(n)
-         ++ ": "
-         ++ conf_string,
-       )}
-      <br />
-      <canvas id={"Maze_" ++ conf_string} className="MazeCanvas" style=swh />
-    </div>;
-  },
+  let (dims, setDims) = React.useState(() => {m: 2, n: 2});
+  let (conf, setConf) = React.useState(() => configuration);
+  let conf_string = conf->string_of_bool_list;
+
+  let style =
+    ReactDOMRe.Style.make(~borderWidth="3px", ~borderStyle="solid", ());
+  let sw = ReactDOMRe.Style.unsafeAddProp(style, "width", "550px");
+  let swh =
+    ReactDOMRe.Style.unsafeAddProp(
+      sw,
+      "height",
+      string_of_int(550 * n / m) ++ "px",
+    );
+
+  React.useEffect0(() => {
+    draw(
+      m,
+      n,
+      "Maze_" ++ conf->string_of_bool_list,
+      Array.of_list(configuration),
+    )
+    |> ignore;
+    None;
+  });
+  <div>
+    {React.string(
+       "Maze"
+       ++ string_of_int(m)
+       ++ "x"
+       ++ string_of_int(n)
+       ++ ": "
+       ++ conf_string,
+     )}
+    <br />
+    <canvas id={"Maze_" ++ conf_string} className="MazeCanvas" style=swh />
+  </div>;
 };
