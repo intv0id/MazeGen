@@ -13,17 +13,31 @@ let reset_prefix = {
   reset_prefix_tail([]);
 };
 
-let rec incr = (k, m, combination) => {
-  switch (k, m) {
-  | (0, m_) when m_ > 0 => raise(EndOfCombinations)
-  | _ =>
-    switch (combination) {
-    | [false, true, ..._] => [true, false, ...reset_prefix(k - 1, m - 2)]
-    | [false, ...b] => [false, ...incr(k, m - 1, b)]
-    | [true, ...b] => [true, ...incr(k - 1, m - 1, b)]
-    | _ => raise(EndOfCombinations)
-    }
+let reset_suffix = {
+  let rec reset_suffix_tail = (prefix, k, m) =>
+    switch (k, m) {
+    | (_, 0) => prefix
+    | (a, b) when b > a => reset_suffix_tail([false, ...prefix], k, m - 1)
+    | _ => reset_suffix_tail([true, ...prefix], k - 1, m - 1)
+    };
+  reset_suffix_tail([]);
+};
+
+let incr = (k, m) => {
+  let rec incr_tail = (acc, k_, m_, combination) => {
+    switch (k, m) {
+    | (0, m_) when m_ > 0 => raise(EndOfCombinations)
+    | _ =>
+      switch (combination) {
+      | [false, true, ...c] =>
+        reset_prefix(k - k_, m - m_) @ [true, false, ...c]
+      | [false, ...b] => incr_tail([true, ...acc], k_, m_ - 1, b)
+      | [true, ...b] => incr_tail([true, ...acc], k_ - 1, m_ - 1, b)
+      | _ => raise(EndOfCombinations)
+      }
+    };
   };
+  incr_tail([], k, m);
 };
 
 let generate_n_combinations = (k, m, n, ~start_combination as sc=?, ()) => {
@@ -59,7 +73,7 @@ let generate = (m_dim, n_dim) => {
     m_dim * (n_dim - 1) + n_dim * (m_dim - 1),
   );
   let incr_conf = incr(k, m);
-  let check = _ => true;
+  let check = sanity_check(m_dim, n_dim);
   let rec generate_next_combinations_tail = (acc, comb_start) =>
     try (
       check(comb_start->Array.of_list)
