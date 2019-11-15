@@ -13,9 +13,9 @@ let reset_prefix = {
   reset_prefix_tail([]);
 };
 
-let rec incr = (k, m, combination) =>
+let rec incr = (k, m, combination) => {
   switch (k, m) {
-  | (0, m_) when m_ > 0 => reset_prefix(k, m)
+  | (0, m_) when m_ > 0 => raise(EndOfCombinations)
   | _ =>
     switch (combination) {
     | [false, true, ..._] => [true, false, ...reset_prefix(k - 1, m - 2)]
@@ -24,11 +24,11 @@ let rec incr = (k, m, combination) =>
     | _ => raise(EndOfCombinations)
     }
   };
+};
 
-let generate_n_combinations = (k, m, n) => {
+let generate_n_combinations = (k, m, n, ~start_combination as sc=?, ()) => {
   let incr_conf = incr(k, m);
-  //let check = sanity_check(k, m);
-  let check = (_) => true;
+  let check = sanity_check(k, m);
   let rec generate_n_combinations_tail = (acc, comb_start, n) =>
     try (
       switch (n) {
@@ -45,8 +45,32 @@ let generate_n_combinations = (k, m, n) => {
     ) {
     | EndOfCombinations => acc
     };
-  let cs = reset_prefix(k, m);
-  generate_n_combinations_tail([cs], reset_prefix(k, m), n);
+  let cs =
+    switch (sc) {
+    | None => reset_prefix(k, m)
+    | Some(a) => a
+    };
+  generate_n_combinations_tail([], cs, n);
 };
 
-let a = generate_n_combinations(3, 5, 10);
+let generate = (m_dim, n_dim) => {
+  let (k, m) = (
+    (m_dim - 1) * (n_dim - 1),
+    m_dim * (n_dim - 1) + n_dim * (m_dim - 1),
+  );
+  let incr_conf = incr(k, m);
+  let check = _ => true;
+  let rec generate_next_combinations_tail = (acc, comb_start) =>
+    try (
+      check(comb_start->Array.of_list)
+        ? generate_next_combinations_tail(
+            [comb_start, ...acc],
+            incr_conf(comb_start),
+          )
+        : generate_next_combinations_tail(acc, incr_conf(comb_start))
+    ) {
+    | EndOfCombinations =>
+      check(comb_start->Array.of_list) ? [comb_start, ...acc] : acc
+    };
+  generate_next_combinations_tail([], reset_prefix(k, m));
+};

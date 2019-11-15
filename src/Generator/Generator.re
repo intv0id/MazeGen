@@ -15,7 +15,7 @@ let rec combinations_tail = (prefix, f, k, m) =>
 
 let combinations = combinations_tail([]);
 
-let generate_tail = (m, n) =>
+let generate = (m, n) =>
   combinations(
     sanity_check(m, n),
     (m - 1) * (n - 1),

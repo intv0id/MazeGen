@@ -58,8 +58,6 @@ let draw = (m, n, id, configuration) => {
           )
         | _ =>
           let idx_h = idx - (m - 1) * n;
-          Js.log(idx_h->string_of_int);
-          Js.log((idx_h / (n - 1))->string_of_int);
           (Horizontal, idx_h mod m, 1+idx_h / m);
         };
       draw_wall(x, y, dir);
