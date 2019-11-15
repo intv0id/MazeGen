@@ -23,7 +23,6 @@ let rec passage = (configuration, m, n, x, y, ord) => {
 let sanity_check = (m, n, configuration) => {
   let maze = Array.make_matrix(m, n, false);
   let check_pass = passage(configuration, m, n);
-  Js.log(configuration);
 
   let rec search = (x, y) =>
     if (maze[x][y] == false) {
