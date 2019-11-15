@@ -31,15 +31,6 @@ let make = (~m, ~n, ~configuration) => {
     None;
   });
   <div>
-    {React.string(
-       "Maze"
-       ++ string_of_int(m)
-       ++ "x"
-       ++ string_of_int(n)
-       ++ ": "
-       ++ conf_string,
-     )}
-    <br />
     <canvas id={"Maze_" ++ conf_string} className="MazeCanvas" style=swh />
   </div>;
 };
