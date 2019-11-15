@@ -9,8 +9,8 @@ let rec passage = (configuration, m, n, x, y, ord) => {
   switch (ord, x, y) {
   | (Left, 0, _) => false
   | (Up, _, 0) => false
-  | (Right, a, _) when a == (m - 1) => false
-  | (Down, _, b) when b == (n - 1) => false
+  | (Right, a, _) when a == m - 1 => false
+  | (Down, _, b) when b == n - 1 => false
 
   | (Left, _, _) => check_pass(x - 1, y, Right)
   | (Up, _, _) => check_pass(x, y - 1, Down)
@@ -28,17 +28,11 @@ let sanity_check = (m, n, configuration) => {
   let rec search = (x, y) =>
     if (maze[x][y] == false) {
       maze[x][y] = true;
-      Js.log([|x, y|]);
 
       let l = check_pass(x, y, Left) ? search(x - 1, y) : 0;
       let r = check_pass(x, y, Right) ? search(x + 1, y) : 0;
       let u = check_pass(x, y, Up) ? search(x, y - 1) : 0;
       let d = check_pass(x, y, Down) ? search(x, y + 1) : 0;
-
-      /*Js.log(configuration);
-      Js.log([|x, y|]);
-      Js.log([|l, r, u, d|]);
-      Js.log(maze);*/
 
       1 + l + r + u + d;
     } else {
