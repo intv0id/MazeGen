@@ -2,6 +2,10 @@ open Verifier;
 
 exception EndOfCombinations;
 
+type combinationsChunk =
+  | LastChunk(list(list(bool)))
+  | Chunk(list(list(bool)));
+
 let reset_prefix = {
   let rec reset_prefix_tail = (prefix, k, m) =>
     switch (k, m) {
@@ -40,51 +44,43 @@ let incr = (k, m) => {
   incr_tail([], k, m);
 };
 
-let generate_n_combinations = (k, m, n, ~start_combination as sc=?, ()) => {
-  let incr_conf = incr(k, m);
-  let check = sanity_check(k, m);
-  let rec generate_n_combinations_tail = (acc, comb_start, n) =>
-    try (
-      switch (n) {
-      | 0 => acc
-      | _ =>
-        check(comb_start->Array.of_list)
-          ? generate_n_combinations_tail(
-              [comb_start, ...acc],
-              incr_conf(comb_start),
-              n - 1,
-            )
-          : generate_n_combinations_tail(acc, incr_conf(comb_start), n - 1)
-      }
-    ) {
-    | EndOfCombinations => acc
-    };
-  let cs =
-    switch (sc) {
-    | None => reset_prefix(k, m)
-    | Some(a) => a
-    };
-  generate_n_combinations_tail([], cs, n);
-};
-
-let generate = (m_dim, n_dim) => {
+let generate_nb_combinations =
+    (m_dim, n_dim, nb, ~start_combination as sc=?, ()) => {
   let (k, m) = (
     (m_dim - 1) * (n_dim - 1),
     m_dim * (n_dim - 1) + n_dim * (m_dim - 1),
   );
   let incr_conf = incr(k, m);
   let check = sanity_check(m_dim, n_dim);
-  let rec generate_next_combinations_tail = (acc, comb_start) =>
-    try (
-      check(comb_start->Array.of_list)
-        ? generate_next_combinations_tail(
-            [comb_start, ...acc],
-            incr_conf(comb_start),
-          )
-        : generate_next_combinations_tail(acc, incr_conf(comb_start))
-    ) {
-    | EndOfCombinations =>
-      check(comb_start->Array.of_list) ? [comb_start, ...acc] : acc
+  let rec generate_next_combinations_tail = (acc, nb_, ~comb_start=?, ()) =>
+    switch (nb_) {
+    | 0 => Chunk(acc)
+    | _ =>
+      try (
+        {
+          let new_comb =
+            switch (comb_start) {
+            | None => reset_prefix(k, m)
+            | Some(a) => incr_conf(a)
+            };
+          check(new_comb->Array.of_list)
+            ? generate_next_combinations_tail(
+                [new_comb, ...acc],
+                nb_ - 1,
+                ~comb_start=new_comb,
+                (),
+              )
+            : generate_next_combinations_tail(
+                acc,
+                nb_ - 1,
+                ~comb_start=new_comb,
+                (),
+              );
+        }
+      ) {
+      | EndOfCombinations => LastChunk(acc)
+      }
     };
-  generate_next_combinations_tail([], reset_prefix(k, m));
+
+  generate_next_combinations_tail([], nb, ~comb_start=?sc, ());
 };
