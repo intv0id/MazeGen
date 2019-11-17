@@ -72,7 +72,7 @@ let generate_nb_combinations =
               )
             : generate_next_combinations_tail(
                 acc,
-                nb_ - 1,
+                nb_,
                 ~comb_start=new_comb,
                 (),
               );
